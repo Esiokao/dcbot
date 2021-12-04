@@ -1,4 +1,3 @@
-import crawler from './crawler/index';
-import { targetUrl } from './crawler/crawler.config';
+import bot from './bot';
 
-crawler(targetUrl.href);
+bot.login(process.env.TOKEN);

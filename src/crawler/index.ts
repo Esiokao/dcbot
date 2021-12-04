@@ -49,11 +49,6 @@ async function crawl(url: string) {
   // 2. crwal the html
   const html = await (await axios.get(url)).data;
   const $ = cheerio.load(html);
-  // generate the anchor tags array in html
-  // const links = $('a')
-  //   .map((i, el) => getUrl(el.attribs.href))
-  //   .get();
-  // generate the images links array in html
   const imageUrls = $('img')
     .map((i, image) => getUrl(image.attribs.src))
     .get();
@@ -76,15 +71,6 @@ async function crawl(url: string) {
           });
       });
   }
-
-  // 4. recursive
-  // const { host } = new URL(url);
-  // if (links.length === 0) return;
-  // links
-  //   .filter(link => link.includes(host))
-  //   .forEach(link => {
-  //     crawl(link);
-  //   });
 }
 
 export default crawl;
