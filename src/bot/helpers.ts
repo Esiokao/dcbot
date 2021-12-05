@@ -7,7 +7,14 @@ export function randMax(max: number) {
 }
 
 export async function getImageBufferHelper(type: string): Promise<BufferResolvable> {
-  const imagePath = path.join(__dirname, `../../images/${type}/${randMax(20)}.jpg`);
+  const data = await fs.promises.readFile(
+    path.join(__dirname, `../../images/${type}/config.json`),
+    {
+      encoding: 'utf-8',
+    }
+  );
+  const { length } = JSON.parse(data);
+  const imagePath = path.join(__dirname, `../../images/${type}/${randMax(length)}.jpg`);
   const imageBuffer = fs.readFileSync(imagePath);
   return imageBuffer;
 }

@@ -16,7 +16,7 @@ async function whatToEatHandler(message: Message, type: string): Promise<void> {
 
 async function typeToEatHanlder(message: Message): Promise<void> {
   if (typeRegexp.test(message.content)) {
-    const type: string = message.content.substring(1);
+    const type: string = message.content.substring(1).toLowerCase().trim();
     const targetUrl = new URL(targetBaseUrl.href + type);
     if (dirExistHelper(type)) {
       message.channel.send({
@@ -28,15 +28,13 @@ async function typeToEatHanlder(message: Message): Promise<void> {
       });
     } else {
       await crawler(targetUrl.href, type);
-      setTimeout(async () => {
-        message.channel.send({
-          files: [
-            {
-              attachment: await getImageBufferHelper(type),
-            },
-          ],
-        });
-      }, 1000);
+      message.channel.send({
+        files: [
+          {
+            attachment: await getImageBufferHelper(type),
+          },
+        ],
+      });
     }
   }
 }

@@ -60,6 +60,15 @@ export function dirExistHelper(dir: string): Boolean {
  * @param  {string} dir
  * @description create the folder.
  */
-export function mkdirHelper(dir: string): void {
-  fs.mkdirSync(path.join(__dirname, `../../images/${dir}`));
+export async function mkdirHelper(dir: string): Promise<void> {
+  await fs.promises.mkdir(path.join(__dirname, `../../images/${dir}`));
+}
+
+export async function writeFileHelper(type: string, length: number) {
+  await fs.promises
+    .writeFile(
+      path.join(__dirname, `../../images/${type}/config.json`),
+      await JSON.stringify({ length })
+    )
+    .catch(err => console.log(err));
 }
