@@ -1,18 +1,10 @@
-import { BufferResolvable, Message } from 'discord.js';
-import * as fs from 'fs';
-import path from 'path';
+import { Message } from 'discord.js';
+import { URL } from 'url';
+import { getImageBufferHelper, typeRegexp, dirExistHelper } from './helpers';
+import crawler from '../crawler';
+import targetBaseUrl from '../crawler/crawler.config';
 
-function randMax(max: number) {
-  return Math.trunc((1e9 * Math.random()) % max);
-}
-
-async function getImageBufferHelper(type: string): Promise<BufferResolvable> {
-  const imagePath = path.join(__dirname, `../../images/${type}/${randMax(20)}`);
-  const imageBuffer = fs.readFileSync(imagePath);
-  return imageBuffer;
-}
-
-async function whatToEatHandler(message: Message, type: string) {
+async function whatToEatHandler(message: Message, type: string): Promise<void> {
   message.channel.send({
     files: [
       {
@@ -22,8 +14,36 @@ async function whatToEatHandler(message: Message, type: string) {
   });
 }
 
+async function typeToEatHanlder(message: Message): Promise<void> {
+  if (typeRegexp.test(message.content)) {
+    const type: string = message.content.substring(1);
+    const targetUrl = new URL(targetBaseUrl.href + type);
+    if (dirExistHelper(type)) {
+      message.channel.send({
+        files: [
+          {
+            attachment: await getImageBufferHelper(type),
+          },
+        ],
+      });
+    } else {
+      await crawler(targetUrl.href, type);
+      setTimeout(async () => {
+        message.channel.send({
+          files: [
+            {
+              attachment: await getImageBufferHelper(type),
+            },
+          ],
+        });
+      }, 1000);
+    }
+  }
+}
+
 async function messageHandler(message: Message) {
-  if (message.content === '!吃啥') whatToEatHandler(message, 'food');
+  if (message.content === '!吃啥') await whatToEatHandler(message, 'food');
+  else if (typeRegexp.test(message.content)) await typeToEatHanlder(message);
 }
 
 export default messageHandler;

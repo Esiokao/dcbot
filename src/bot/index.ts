@@ -8,6 +8,6 @@ const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_
 
 client.on('ready', () => console.log('bot is ready'));
 
-client.on('message', messageHandler);
+client.on('messageCreate', messageHandler);
 
 export default client;
