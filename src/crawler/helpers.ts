@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import path from 'path';
+import axios from 'axios';
 import targetBaseUrl from './crawler.config';
 
 const crawledImage = new Map();
@@ -71,4 +72,25 @@ export async function writeFileHelper(type: string, length: number) {
       await JSON.stringify({ length })
     )
     .catch(err => console.log(err));
+}
+
+export async function downloadImageHelper(filtedImageUrls: Array<string>, type: string) {
+  await Promise.all(
+    filtedImageUrls.map(async (imageUrl, index) => {
+      const dest = fs.createWriteStream(`images/${type}/${index}.jpg`);
+      const response = await axios.get(imageUrl, {
+        responseType: 'arraybuffer',
+      });
+      console.log('get', index);
+      const buffer = Buffer.from(response.data, 'base64');
+      dest.write(buffer);
+      dest.end();
+
+      if (index === filtedImageUrls.length - 1) {
+        if (!dirExistHelper(type)) return;
+        writeFileHelper(type, filtedImageUrls.length);
+        console.log('done crawling');
+      }
+    })
+  );
 }

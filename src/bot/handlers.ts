@@ -23,28 +23,30 @@ async function typeToEatHanlder(message: Message): Promise<void> {
         message.channel.send({
           content: `Seems like there's no such related result 😢 `,
         });
+      } else {
+        message.channel.send({
+          files: [
+            {
+              attachment: await getImageBufferHelper(type),
+            },
+          ],
+        });
       }
-      message.channel.send({
-        files: [
-          {
-            attachment: await getImageBufferHelper(type),
-          },
-        ],
-      });
     } else {
       await crawler(targetUrl.href, type);
       if (!fileExistHelper(type, 'config', 'json')) {
         message.channel.send({
           content: `Seems like there's no such related result 😢 `,
         });
+      } else {
+        message.channel.send({
+          files: [
+            {
+              attachment: await getImageBufferHelper(type),
+            },
+          ],
+        });
       }
-      message.channel.send({
-        files: [
-          {
-            attachment: await getImageBufferHelper(type),
-          },
-        ],
-      });
     }
   }
 }
