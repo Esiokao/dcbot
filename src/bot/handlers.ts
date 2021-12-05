@@ -1,6 +1,6 @@
 import { Message } from 'discord.js';
 import { URL } from 'url';
-import { getImageBufferHelper, typeRegexp, dirExistHelper } from './helpers';
+import { getImageBufferHelper, typeRegexp, dirExistHelper, fileExistHelper } from './helpers';
 import crawler from '../crawler';
 import targetBaseUrl from '../crawler/crawler.config';
 
@@ -19,6 +19,11 @@ async function typeToEatHanlder(message: Message): Promise<void> {
     const type: string = message.content.substring(1).toLowerCase().trim();
     const targetUrl = new URL(targetBaseUrl.href + type);
     if (dirExistHelper(type)) {
+      if (!fileExistHelper(type, 'config', 'json')) {
+        message.channel.send({
+          content: `Seems like there's no such related result 😢 `,
+        });
+      }
       message.channel.send({
         files: [
           {
@@ -28,6 +33,11 @@ async function typeToEatHanlder(message: Message): Promise<void> {
       });
     } else {
       await crawler(targetUrl.href, type);
+      if (!fileExistHelper(type, 'config', 'json')) {
+        message.channel.send({
+          content: `Seems like there's no such related result 😢 `,
+        });
+      }
       message.channel.send({
         files: [
           {

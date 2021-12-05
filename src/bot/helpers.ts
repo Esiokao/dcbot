@@ -28,4 +28,8 @@ export function dirExistHelper(dir: string): Boolean {
   return fs.existsSync(path.join(__dirname, `../../images/${dir}`));
 }
 
+export function fileExistHelper(dir: string, filename: string, format: 'jpg' | 'json'): Boolean {
+  return fs.existsSync(path.join(__dirname, `../../images/${dir}/${filename}.${format}`));
+}
+
 export const typeRegexp = /^![a-zA-Z\s]+$/;
