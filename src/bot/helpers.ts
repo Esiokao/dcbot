@@ -1,6 +1,7 @@
 import { BufferResolvable, Message } from 'discord.js';
 import * as fs from 'fs';
 import path from 'path';
+import { Config } from '../crawler/types';
 /**
  * @param  {number} max
  * @returns {number}
@@ -10,14 +11,25 @@ export function randMax(max: number): number {
   return Math.trunc((1e9 * Math.random()) % max) || 0;
 }
 
-export async function getImageBufferHelper(type: string): Promise<BufferResolvable> {
-  const data = await fs.promises.readFile(
+export async function readConfigHelper(type: string, total: boolean = false): Promise<Config> {
+  const config = await fs.promises.readFile(
     path.join(__dirname, `../../images/${type}/config.json`),
     {
       encoding: 'utf-8',
     }
   );
-  const { length } = await JSON.parse(data);
+  const parsedConfig = await JSON.parse(config);
+  const arrayFromConfig = Array.from<Config>(parsedConfig);
+  const typeConfigObject = arrayFromConfig.filter(typeConfig => typeConfig.type === type)[0];
+  const toalConfigObject = arrayFromConfig.filter(typeConfig => typeConfig.type === '$total')[0];
+  if (total) {
+    return toalConfigObject;
+  }
+  return typeConfigObject;
+}
+
+export async function getImageBufferHelper(type: string): Promise<BufferResolvable> {
+  const { length } = await readConfigHelper(type, true);
   const imagePath = path.join(__dirname, `../../images/${type}/${randMax(length)}.jpg`);
   const imageBuffer = fs.readFileSync(imagePath);
   return imageBuffer;
@@ -56,4 +68,5 @@ export function fileExistHelper(dir: string, filename: string, format: 'jpg' | '
   return fs.existsSync(path.join(__dirname, `../../images/${dir}/${filename}.${format}`));
 }
 
-export const typeRegexp = /^![a-zA-Z\s]+$/;
+export const typeCommandRegexp = /^![a-zA-Z\s]+$/;
+export const addCommandRegexp = /^!add\s[a-zA-Z\s]+$/;
