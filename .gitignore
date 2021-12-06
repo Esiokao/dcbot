@@ -1,6 +1,7 @@
 html/
 .vsode
 images/
+.env
 # Logs
 logs
 *.log
