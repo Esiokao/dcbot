@@ -17,7 +17,7 @@ export async function getImageBufferHelper(type: string): Promise<BufferResolvab
       encoding: 'utf-8',
     }
   );
-  const { length } = JSON.parse(data);
+  const { length } = await JSON.parse(data);
   const imagePath = path.join(__dirname, `../../images/${type}/${randMax(length)}.jpg`);
   const imageBuffer = fs.readFileSync(imagePath);
   return imageBuffer;

@@ -1,8 +1,5 @@
+# Roadmap
 
-# ( 1. check if this url has been crawled )
+### 1. infinite scroll crawl
 
-# ( 2. crwal the html )
-
-# ( 3. retrive the imageUrl from html )
-
-# ( 4. recursive loop )
+### 2. 

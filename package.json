@@ -1,6 +1,6 @@
 {
-  "name": "food-crawler",
-  "version": "1.0.0",
+  "name": "dcbot",
+  "version": "0.0.1",
   "description": "",
   "main": "index.js",
   "type": "module",
