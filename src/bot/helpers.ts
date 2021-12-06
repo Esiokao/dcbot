@@ -1,9 +1,13 @@
-import { BufferResolvable } from 'discord.js';
+import { BufferResolvable, Message } from 'discord.js';
 import * as fs from 'fs';
 import path from 'path';
-
-export function randMax(max: number) {
-  return Math.trunc((1e9 * Math.random()) % max);
+/**
+ * @param  {number} max
+ * @returns {number}
+ * @description get a number from a range.
+ */
+export function randMax(max: number): number {
+  return Math.trunc((1e9 * Math.random()) % max) || 0;
 }
 
 export async function getImageBufferHelper(type: string): Promise<BufferResolvable> {
@@ -17,6 +21,26 @@ export async function getImageBufferHelper(type: string): Promise<BufferResolvab
   const imagePath = path.join(__dirname, `../../images/${type}/${randMax(length)}.jpg`);
   const imageBuffer = fs.readFileSync(imagePath);
   return imageBuffer;
+}
+
+export async function sendImageContentHelper(
+  message: Message,
+  type: string,
+  notFound: boolean = false
+): Promise<void> {
+  if (notFound) {
+    message.channel.send({
+      content: `Seems like there's no such related result 😢 `,
+    });
+  } else {
+    message.channel.send({
+      files: [
+        {
+          attachment: await getImageBufferHelper(type),
+        },
+      ],
+    });
+  }
 }
 
 /**

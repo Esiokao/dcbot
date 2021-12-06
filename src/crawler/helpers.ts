@@ -81,7 +81,7 @@ export async function downloadImageHelper(filtedImageUrls: Array<string>, type: 
       const response = await axios.get(imageUrl, {
         responseType: 'arraybuffer',
       });
-      console.log('get', index);
+
       const buffer = Buffer.from(response.data, 'base64');
       dest.write(buffer);
       dest.end();
@@ -89,7 +89,6 @@ export async function downloadImageHelper(filtedImageUrls: Array<string>, type: 
       if (index === filtedImageUrls.length - 1) {
         if (!dirExistHelper(type)) return;
         writeFileHelper(type, filtedImageUrls.length);
-        console.log('done crawling');
       }
     })
   );
