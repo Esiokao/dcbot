@@ -4,7 +4,7 @@ import { imageUrlFilter, dirExistHelper, mkdirHelper, downloadImageHelper } from
 
 const crawledUrl = new Map();
 
-async function crawler(url: string, type: string) {
+async function crawler(url: string, type: string, dir: string) {
   console.log('crawling', url);
   // 1. check if this url has been crawled
   if (crawledUrl.has(url)) return;
@@ -18,9 +18,9 @@ async function crawler(url: string, type: string) {
 
   // download the image file and encode with base64
   if (imageUrls.length) {
-    if (!dirExistHelper(type)) await mkdirHelper(type);
+    if (!dirExistHelper(dir)) await mkdirHelper(dir);
     const filtedUrls = imageUrls.filter(imageUrl => imageUrlFilter(imageUrl));
-    await downloadImageHelper(filtedUrls, type);
+    await downloadImageHelper(filtedUrls, type, dir);
   }
   console.log('crawl end');
 }

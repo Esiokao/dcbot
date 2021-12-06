@@ -68,5 +68,26 @@ export function fileExistHelper(dir: string, filename: string, format: 'jpg' | '
   return fs.existsSync(path.join(__dirname, `../../images/${dir}/${filename}.${format}`));
 }
 
+export async function typeExistHelper(type: string, dir: string): Promise<Boolean> {
+  if (fileExistHelper(dir, 'config', 'json')) {
+    try {
+      const config = await fs.promises.readFile(
+        path.join(__dirname, `../../images/${dir}/config.json`),
+        {
+          encoding: 'utf-8',
+        }
+      );
+      const parsedConfig = JSON.parse(config);
+      const arrayFromConfig = Array.from<Config>(parsedConfig);
+      const typeExist: Boolean = arrayFromConfig.some(configElement => configElement.type === type);
+      return typeExist;
+    } catch {
+      throw new Error();
+      return false;
+    }
+  }
+  return false;
+}
+
 export const typeCommandRegexp = /^![a-zA-Z\s]+$/;
 export const addCommandRegexp = /^!add\s[a-zA-Z\s]+$/;

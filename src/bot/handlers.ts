@@ -7,6 +7,7 @@ import {
   fileExistHelper,
   sendImageContentHelper,
   addCommandRegexp,
+  typeExistHelper,
 } from './helpers';
 import crawler from '../crawler';
 import targetBaseUrl from '../crawler/crawler.config';
@@ -31,7 +32,7 @@ async function whatToEatHandler(message: Message, type: string): Promise<void> {
 async function typeToEatHanlder(message: Message): Promise<void> {
   const type: string = message.content.substring(1).toLowerCase().trim();
   const targetUrl = new URL(targetBaseUrl.href + type);
-  if (!dirExistHelper(type)) await crawler(targetUrl.href, type);
+  if (!dirExistHelper(type)) await crawler(targetUrl.href, type, type);
   if (!fileExistHelper(type, 'config', 'json')) {
     sendImageContentHelper(message, type, true);
   } else {
@@ -42,7 +43,8 @@ async function typeToEatHanlder(message: Message): Promise<void> {
 async function addTypeToEatHanlder(message: Message): Promise<void> {
   const type: string = message.content.substring(5).toLowerCase().trim();
   const targetUrl = new URL(targetBaseUrl.href + type);
-  if (!dirExistHelper(type)) await crawler(targetUrl.href, 'food');
+  const typeExist = await typeExistHelper(type, 'food');
+  if (!typeExist) await crawler(targetUrl.href, type, 'food');
   if (!fileExistHelper('food', 'config', 'json')) {
     sendImageContentHelper(message, 'food', true);
   } else {

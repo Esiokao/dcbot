@@ -6,7 +6,6 @@ import { Config } from './types';
 
 const crawledImage = new Map();
 
-
 /**
  * @param  {string} imageUrl
  * @returns string
@@ -78,14 +77,20 @@ export async function mkdirHelper(dir: string): Promise<void> {
   await fs.promises.mkdir(path.join(__dirname, `../../images/${dir}`));
 }
 
-export async function writeFileHelper(type: string, startIndex: number, length: number) {
+export async function updateConfigHelper(
+  dir: string,
+  type: string,
+  startIndex: number,
+  length: number
+) {
   let totalIndex;
   let parsedConfig;
   let arrayFromConfig;
   let newConfig = [];
-  if (fileExistHelper(type, 'config', 'json')) {
+
+  if (fileExistHelper(dir, 'config', 'json')) {
     const config = await fs.promises.readFile(
-      path.join(__dirname, `../../images/${type}/config.json`),
+      path.join(__dirname, `../../images/${dir}/config.json`),
       {
         encoding: 'utf-8',
       }
@@ -102,14 +107,14 @@ export async function writeFileHelper(type: string, startIndex: number, length: 
     }
     await fs.promises
       .writeFile(
-        path.join(__dirname, `../../images/${type}/config.json`),
+        path.join(__dirname, `../../images/${dir}/config.json`),
         await JSON.stringify(newConfig)
       )
       .catch(err => console.log(err));
   } else {
     await fs.promises
       .writeFile(
-        path.join(__dirname, `../../images/${type}/config.json`),
+        path.join(__dirname, `../../images/${dir}/config.json`),
         await JSON.stringify([
           { type, startIndex, length },
           { type: '$total', length },
@@ -119,9 +124,13 @@ export async function writeFileHelper(type: string, startIndex: number, length: 
   }
 }
 
-export async function readConfigHelper(type: string, total: boolean = false): Promise<Config> {
+export async function getConfigHelper(
+  dir: string,
+  type: string,
+  total: boolean = false
+): Promise<Config> {
   const config = await fs.promises.readFile(
-    path.join(__dirname, `../../images/${type}/config.json`),
+    path.join(__dirname, `../../images/${dir}/config.json`),
     {
       encoding: 'utf-8',
     }
@@ -136,13 +145,17 @@ export async function readConfigHelper(type: string, total: boolean = false): Pr
   return typeConfigObject;
 }
 
-export async function downloadImageHelper(filtedImageUrls: Array<string>, type: string) {
+export async function downloadImageHelper(
+  filtedImageUrls: Array<string>,
+  type: string,
+  dir: string
+) {
   await Promise.all(
     filtedImageUrls.map(async (imageUrl, index) => {
-      const offset = fileExistHelper(type, 'config', 'json')
-        ? (await (await readConfigHelper(type, true)).length) || 0
+      const offset = fileExistHelper(dir, 'config', 'json')
+        ? (await (await getConfigHelper(dir, type, true)).length) || 0
         : 0;
-      const dest = fs.createWriteStream(`images/${type}/${index + offset}.jpg`);
+      const dest = fs.createWriteStream(`images/${dir}/${index + offset}.jpg`);
       const response = await axios.get(imageUrl, {
         responseType: 'arraybuffer',
       });
@@ -152,8 +165,7 @@ export async function downloadImageHelper(filtedImageUrls: Array<string>, type: 
       dest.end();
 
       if (index === filtedImageUrls.length - 1) {
-        if (!dirExistHelper(type)) return;
-        writeFileHelper(type, offset, filtedImageUrls.length);
+        updateConfigHelper(dir, type, offset, filtedImageUrls.length);
       }
     })
   );
